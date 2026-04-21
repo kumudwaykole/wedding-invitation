@@ -1,121 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import FloatingLeaves from './components/FloatingLeaves';
+import EnvelopeReveal from './components/EnvelopeReveal';
+import HeroSection from './components/HeroSection';
+import SaveTheDateSection from './components/SaveTheDateSection';
+import OurStorySection from './components/OurStorySection';
+import EventCard from './components/EventCard';
+import VenueSection from './components/VenueSection';
+import TimelineSection from './components/TimelineSection';
+import WelcomeSection from './components/WelcomeSection';
+import './index.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [revealed, setRevealed] = useState(false);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <FloatingLeaves>
+      <EnvelopeReveal onReveal={() => setRevealed(true)} />
+      <div
+        className="mx-auto relative transition-opacity duration-500 overflow-x-hidden"
+        style={{ opacity: revealed ? 1 : 0 }}
+      >
+        <HeroSection />
+        <SaveTheDateSection />
+        <OurStorySection />
+        <EventCard
+          isDay2={true}
+          day="Monday"
+          date={18}
+          month={5}
+          year={2026}
+          title="Sangeet"
+          time="5:45 PM Onwards"
+          venue="Aditya Lawn, Jalgaon"
+          theme="Mystic & Magic"
+          theme2="Glits & Glam"
+          bgGradient="linear-gradient(135deg,#0d1b4b 0%,#1a2d6b 30%,#2a0a4a 70%,#0d1b4b 100%)"
+          accentColor="#ffd700"
+        />
+        <EventCard
+          isDay2={false}
+          day="Wednesday"
+          date={27}
+          month={5}
+          year={2026}
+          title="Reception"
+          time="5:00 PM Onwards"
+          venue="Bing, Indo-Western"
+          theme="An Evening to Remember"
+          theme2="Wedding Reception"
+          bgGradient="linear-gradient(135deg,#0a2a3a 0%,#0d3d52 30%,#1a4a5a 70%,#0a2a3a 100%)"
+          accentColor="#e8c96a"
+        />
+        <VenueSection />
+        <TimelineSection />
+        <WelcomeSection />
+      </div>
+    </FloatingLeaves>
+  );
 }
 
-export default App
+export default App;
