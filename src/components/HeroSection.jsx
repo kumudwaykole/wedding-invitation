@@ -117,20 +117,20 @@ export default function HeroSection() {
 
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-[9px] tracking-wide font-bold text-amber-950 uppercase mb-1.5 whitespace-nowrap"
+                        className="font-body text-xs tracking-wide font-bold text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand S/O
                         Sau Sharda &amp; Shri Kantilalji Kothari
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-[10px] tracking-widest text-amber-950 uppercase mb-1.5"
+                        className="font-body text-[10px] tracking-widest font-bold text-amber-950 uppercase mb-1.5"
                     >
                         (Pirgal)
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-5.5"
+                        className="font-body text-xs tracking-widest font-bold text-amber-950 uppercase mb-5.5"
                     >
                         S/O of Anamika &amp; Hemant Kothari
                     </motion.p>
@@ -138,7 +138,7 @@ export default function HeroSection() {
                     {/* AND divider */}
                     <motion.div
                         {...fadeUp(1.25)}
-                        className="font-cormorant text-sm tracking-[4px] text-brown-muted uppercase leading-none my-3"
+                        className="font-cormorant text-xl tracking-[4px] font-bold text-brown-muted uppercase leading-none my-3"
                     >
                         and
                     </motion.div>
@@ -153,20 +153,20 @@ export default function HeroSection() {
                     </motion.h1>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-[9px] font-bold tracking-wide text-amber-950 uppercase mb-1.5 whitespace-nowrap"
+                        className="font-body text-xs tracking-wide font-bold text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand D/O
                         Late. Jatan Devi &amp; Shri Jagat SinghJi Kothari
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-[10px] tracking-widest text-amber-950 uppercase mb-1.5"
+                        className="font-body text-[10px] tracking-widest font-bold text-amber-950 uppercase mb-1.5"
                     >
                         (Chopra)
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.5)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-11"
+                        className="font-body text-xs tracking-widest font-bold text-amber-950 uppercase mb-11"
                     >
                         D/O of Priyanka &amp; Sandeepji Kothari
                     </motion.p>
@@ -178,7 +178,7 @@ export default function HeroSection() {
                         transition={{ delay: 2.4 }}
                         className="flex flex-col items-center gap-1.25"
                     >
-                        <span className="font-body text-[9px] tracking-[3px] text-gold-dark uppercase pt-5">
+                        <span className="font-body text-xs font-bold italic tracking-[3px] text-gold-dark uppercase pt-5">
                             Scroll down
                         </span>
                         <motion.span

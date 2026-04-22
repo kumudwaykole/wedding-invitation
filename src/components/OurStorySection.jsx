@@ -5,21 +5,21 @@ import { useInView } from 'react-intersection-observer';
 const CARDS = [
     {
         caption: 'How it started…',
-        src: 'https://i.pinimg.com/webp80/1200x/0c/69/35/0c69353d864f9cbd63cecd5728073bba.webp',   // ← replace
+        src: '/engagement.jpg',   // ← replace
         rotation: -5,
         tape: true,
         tapeAngle: -12,
     },
     {
         caption: 'When we Know…',
-        src: 'https://i.pinimg.com/736x/36/6e/f1/366ef15670193e8adadd285efb46bc74.jpg',   // ← replace
+        src: '/engagement-1.jpg',   // ← replace
         rotation: 3,
         tape: true,
         tapeAngle: 8,
     },
     {
         caption: 'Made it Official…',
-        src: 'https://i.pinimg.com/webp80/1200x/63/a4/ff/63a4ffeb1831ef06a1df39363a8f1509.webp',   // ← replace
+        src: 'engagement-3.jpg',   // ← replace
         rotation: -2,
         tape: true,
         tapeAngle: -6,
