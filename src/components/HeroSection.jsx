@@ -117,7 +117,7 @@ export default function HeroSection() {
 
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5 whitespace-nowrap"
+                        className="font-body text-[9px] tracking-wide font-bold text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand S/O
                         Sau Sharda &amp; Shri Kantilalji Kothari
@@ -132,7 +132,7 @@ export default function HeroSection() {
                         {...fadeUp(1.15)}
                         className="font-body text-xs tracking-widest text-amber-950 uppercase mb-5.5"
                     >
-                        Son of Anamika &amp; Hemant Kothari
+                        S/O of Anamika &amp; Hemant Kothari
                     </motion.p>
 
                     {/* AND divider */}
@@ -153,7 +153,7 @@ export default function HeroSection() {
                     </motion.h1>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5 whitespace-nowrap"
+                        className="font-body text-[9px] font-bold tracking-wide text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand D/O
                         Late. Jatan Devi &amp; Shri Jagat SinghJi Kothari
@@ -168,7 +168,7 @@ export default function HeroSection() {
                         {...fadeUp(1.5)}
                         className="font-body text-xs tracking-widest text-amber-950 uppercase mb-11"
                     >
-                        Daughter of Priyanka &amp; Sandeepji Kothari
+                        D/O of Priyanka &amp; Sandeepji Kothari
                     </motion.p>
 
                     {/* Scroll hint */}
