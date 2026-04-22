@@ -1,31 +1,115 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import confetti from 'canvas-confetti';
 
-/* ── single scratch card ── */
-function ScratchCard({ label, value, delay }) {
+const fontStyle = `
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+  .save-cinzel {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .save-cormorant {
+    font-family: 'Cormorant Garamond', serif;
+  }
+`;
+
+/* ── Sparkle burst shown when a card is revealed ── */
+function SparkleBurst() {
+    return (
+        <motion.div
+            className="absolute inset-0 pointer-events-none z-20"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 1.2, delay: 0.4 }}
+        >
+            {[...Array(8)].map((_, i) => {
+                const angle = (i / 8) * 360;
+                return (
+                    <motion.div
+                        key={i}
+                        className="absolute top-1/2 left-1/2 w-[3px] h-[3px] rounded-full"
+                        style={{ background: i % 2 === 0 ? '#c9a84c' : '#e8c96a', originX: '0%', originY: '0%' }}
+                        initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
+                        animate={{
+                            x: Math.cos((angle * Math.PI) / 180) * 54,
+                            y: Math.sin((angle * Math.PI) / 180) * 54,
+                            scale: 0,
+                            opacity: 0,
+                        }}
+                        transition={{ duration: 0.7, ease: 'easeOut' }}
+                    />
+                );
+            })}
+        </motion.div>
+    );
+}
+
+/* ── Shimmer overlay when hovering unrevealed card ── */
+function ShimmerLayer({ active }) {
+    return (
+        <AnimatePresence>
+            {active && (
+                <motion.div
+                    className="absolute inset-0 pointer-events-none z-10 rounded-[10px] overflow-hidden"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <motion.div
+                        className="absolute inset-0"
+                        style={{
+                            background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,220,0.45) 50%, transparent 65%)',
+                            backgroundSize: '200% 100%',
+                        }}
+                        animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
+                        transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
+                    />
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+}
+
+/* ── Single scratch card ── */
+function ScratchCard({ label, value, delay, onRevealed }) {
     const canvasRef = useRef(null);
     const [revealed, setRevealed] = useState(false);
+    const [hovered, setHovered] = useState(false);
+    const [showSparkle, setShowSparkle] = useState(false);
     const drawing = useRef(false);
-    const [sectionRef, inView] = useInView({ triggerOnce: true });
+    const [cardRef, inView] = useInView({ triggerOnce: true });
+
+    // Card dimensions — increase height here
+    const CARD_W = 108;
+    const CARD_H = 120;
 
     useEffect(() => {
         const c = canvasRef.current;
         if (!c) return;
         const ctx = c.getContext('2d');
+
         const g = ctx.createLinearGradient(0, 0, c.width, c.height);
-        g.addColorStop(0, '#c9a84c');
-        g.addColorStop(0.5, '#e8c96a');
-        g.addColorStop(1, '#a07830');
+        g.addColorStop(0, '#b8922a');
+        g.addColorStop(0.3, '#e8c96a');
+        g.addColorStop(0.6, '#c9a84c');
+        g.addColorStop(1, '#8a6420');
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, c.width, c.height);
-        ctx.fillStyle = 'rgba(70,40,5,0.65)';
-        ctx.font = 'bold 9px Raleway,sans-serif';
+
+        for (let i = 0; i < 400; i++) {
+            ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 0},${Math.random() > 0.5 ? 200 : 100},0,0.03)`;
+            ctx.fillRect(Math.random() * c.width, Math.random() * c.height, 2, 2);
+        }
+
+        ctx.fillStyle = 'rgba(60,35,5,0.7)';
+        ctx.font = 'bold 9px cormorant, serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('SCRATCH', c.width / 2, c.height / 2 - 7);
-        ctx.fillText('HERE', c.width / 2, c.height / 2 + 8);
+        ctx.letterSpacing = '2px';
+        ctx.fillText('✦ SCRATCH ✦', c.width / 2, c.height / 2 - 7);
+        ctx.fillText('HERE', c.width / 2, c.height / 2 + 11);
     }, []);
 
     const getXY = (e, c) => {
@@ -42,157 +126,284 @@ function ScratchCard({ label, value, delay }) {
         const { x, y } = getXY(e, c);
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.arc(x, y, 24, 0, Math.PI * 2);
+        ctx.arc(x, y, 28, 0, Math.PI * 2);
         ctx.fill();
+
         const px = ctx.getImageData(0, 0, c.width, c.height).data;
         let gone = 0;
         for (let i = 3; i < px.length; i += 4) if (px[i] < 128) gone++;
-        if (gone / (px.length / 4) > 0.52) { setRevealed(true); fireConfetti(); }
-    };
-
-    const fireConfetti = () => {
-        const colors = ['#c9a84c', '#e8c96a', '#4a7c59', '#f5d6a0', '#a07830'];
-        const end = Date.now() + 2200;
-        const frame = () => {
-            if (Date.now() > end) return;
-            confetti({ particleCount: 2, angle: 60, spread: 55, startVelocity: 42, origin: { x: 0, y: 0.6 }, colors });
-            confetti({ particleCount: 2, angle: 120, spread: 55, startVelocity: 42, origin: { x: 1, y: 0.6 }, colors });
-            requestAnimationFrame(frame);
-        };
-        frame();
+        if (gone / (px.length / 4) > 0.5) {
+            setRevealed(true);
+            setShowSparkle(true);
+            setTimeout(() => setShowSparkle(false), 1200);
+            onRevealed?.();
+        }
     };
 
     return (
         <motion.div
-            ref={sectionRef}
-            initial={{ opacity: 0, y: 32, scale: 0.88 }}
-            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-center gap-[7px] flex-1"
+            ref={cardRef}
+            initial={{ opacity: 0, y: 40, scale: 0.82, rotateY: -15 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1, rotateY: 0 } : {}}
+            transition={{ duration: 0.85, delay, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col items-center gap-[9px] flex-1"
+            style={{ perspective: 400 }}
         >
-            <span className="font-body text-[8px] tracking-[2px] uppercase text-brown-muted">{label}</span>
+            {/* Label */}
+            <motion.span
+                className="save-cinzel text-[10px] tracking-[2.5px] uppercase"
+                style={{ color: '#a07830' }}
+                animate={revealed ? { color: '#4a7c59' } : {}}
+                transition={{ duration: 0.5 }}
+            >
+                {label}
+            </motion.span>
 
-            <div
-                className="relative w-[88px] h-[88px] rounded-[10px] border border-gold overflow-hidden cursor-crosshair"
-                style={{ boxShadow: '0 4px 18px rgba(201,168,76,0.22)' }}
+            {/* Card */}
+            <motion.div
+                className="relative rounded-[12px] overflow-hidden"
+                style={{
+                    width: CARD_W,
+                    height: CARD_H,
+                    boxShadow: revealed
+                        ? '0 0 0 2px #c9a84c, 0 8px 28px rgba(201,168,76,0.35)'
+                        : '0 4px 18px rgba(201,168,76,0.22)',
+                    cursor: revealed ? 'default' : 'crosshair',
+                }}
+                animate={revealed ? { scale: [1, 1.07, 1] } : {}}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                onMouseEnter={() => !revealed && setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
             >
                 {/* Value underneath */}
-                <div className="absolute inset-0 bg-ivory flex items-center justify-center">
-                    <span className="font-display italic font-bold text-[22px] text-brown">{value}</span>
-                </div>
+                <motion.div
+                    className="absolute inset-0 flex flex-col items-center justify-center"
+                    style={{ background: 'linear-gradient(145deg,#fffdf5,#faf3e0)' }}
+                    animate={revealed ? { background: ['linear-gradient(145deg,#fffdf5,#faf3e0)', 'linear-gradient(145deg,#fffbe8,#fdf5d0)', 'linear-gradient(145deg,#fffdf5,#faf3e0)'] } : {}}
+                    transition={{ duration: 0.8 }}
+                >
+                    <motion.span
+                        className="save-cinzel leading-none"
+                        style={{
+                            fontSize: 34,
+                            color: '#3d2b1f',
+                            filter: 'drop-shadow(0 2px 6px rgba(201,168,76,0.3))',
+                        }}
+                        animate={revealed ? { scale: [0.8, 1.12, 1], opacity: [0, 1] } : { scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        {value}
+                    </motion.span>
+                    {revealed && (
+                        <motion.div
+                            initial={{ opacity: 0, scaleX: 0 }}
+                            animate={{ opacity: 1, scaleX: 1 }}
+                            transition={{ delay: 0.3, duration: 0.4 }}
+                            className="h-px w-10 mt-2"
+                            style={{ background: 'linear-gradient(to right,transparent,#c9a84c,transparent)' }}
+                        />
+                    )}
+                </motion.div>
 
-                {/* Scratch layer */}
+                <ShimmerLayer active={hovered && !revealed} />
+
+                {/* Scratch canvas */}
                 <canvas
                     ref={canvasRef}
-                    width={88}
-                    height={88}
+                    width={CARD_W}
+                    height={CARD_H}
                     className="absolute inset-0 w-full h-full touch-none"
-                    style={{ opacity: revealed ? 0 : 1, transition: revealed ? 'opacity 0.55s ease' : 'none' }}
+                    style={{
+                        opacity: revealed ? 0 : 1,
+                        transition: revealed ? 'opacity 0.6s ease' : 'none',
+                        cursor: revealed ? 'default' : 'crosshair',
+                    }}
                     onMouseDown={() => { drawing.current = true; }}
                     onMouseUp={() => { drawing.current = false; }}
-                    onMouseLeave={() => { drawing.current = false; }}
+                    onMouseLeave={() => { drawing.current = false; setHovered(false); }}
                     onMouseMove={erase}
                     onTouchStart={e => { e.preventDefault(); drawing.current = true; }}
                     onTouchEnd={() => { drawing.current = false; }}
                     onTouchMove={e => { e.preventDefault(); erase(e); }}
                 />
 
-                {revealed && (
-                    <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-[5px] right-[5px] w-4 h-4 rounded-full bg-forest text-white text-[9px] flex items-center justify-center"
-                    >
-                        ✓
-                    </motion.span>
-                )}
-            </div>
+                {showSparkle && <SparkleBurst />}
 
-            <span className={`font-body text-[8px] tracking-[1px] uppercase ${revealed ? 'text-forest' : 'text-gold-dark'}`}>
-                {revealed ? '✓ Revealed' : 'Scratch'}
-            </span>
+                {revealed && (
+                    <motion.div
+                        initial={{ scale: 0, rotate: -45 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.2, type: 'spring', stiffness: 400, damping: 18 }}
+                        className="absolute top-[6px] right-[6px] z-20 flex items-center justify-center"
+                    >
+                        <span style={{ color: '#D4AF37', fontSize: 10, lineHeight: 1, fontWeight: 600 }}>✓</span>
+                    </motion.div>
+                )}
+            </motion.div>
+
+            {/* Status text */}
+            <motion.span
+                className="save-cinzel text-[9px] tracking-[1.5px] uppercase"
+                animate={{ color: revealed ? '#4a7c59' : '#a07830' }}
+                transition={{ duration: 0.4 }}
+            >
+                {revealed ? 'Revealed' : 'Scratch'}
+            </motion.span>
         </motion.div>
     );
 }
 
-/* ── section ── */
-export default function SaveTheDateSection() {
-    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.25 });
+/* ── Animated gold divider ── */
+function GoldDivider({ inView }) {
+    return (
+        <motion.div
+            className="flex items-center gap-2.5 w-full max-w-[260px] mx-auto mb-9"
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={inView ? { opacity: 1, scaleX: 1 } : {}}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        >
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right,transparent,#c9a84c)' }} />
+            <span style={{ color: '#c9a84c', fontSize: 11 }}>✦</span>
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left,transparent,#c9a84c)' }} />
+        </motion.div>
+    );
+}
 
-    const dots = Array.from({ length: 22 }, (_, i) => ({
-        w: 4 + Math.random() * 7,
-        h: 4 + Math.random() * 7,
-        circle: Math.random() > 0.5,
-        bg: ['#c9a84c', '#4a7c59', '#f5e6d3', '#e8c96a', '#6fa882'][i % 5],
-        top: 4 + Math.random() * 92,
-        left: 4 + Math.random() * 92,
-        rot: Math.random() * 360,
-    }));
+/* ── Main section ── */
+export default function SaveTheDateSection() {
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
+    const [revealedCount, setRevealedCount] = useState(0);
+    const allRevealed = revealedCount >= 3;
+    const confettiFired = useRef(false);
+
+    const handleRevealed = () => setRevealedCount(n => n + 1);
+
+    // Fire confetti only when all 3 are revealed
+    useEffect(() => {
+        if (allRevealed && !confettiFired.current) {
+            confettiFired.current = true;
+            const colors = ['#c9a84c', '#e8c96a', '#fff4cf', '#f5d6a0', '#a07830', '#4a7c59'];
+            confetti({
+                particleCount: 100,
+                spread: 80,
+                startVelocity: 45,
+                origin: { x: 0.5, y: 0.5 },
+                colors,
+                gravity: 1.1,
+                scalar: 1.0,
+            });
+            setTimeout(() => {
+                confetti({ particleCount: 50, angle: 60, spread: 60, startVelocity: 38, origin: { x: 0.1, y: 0.55 }, colors });
+                confetti({ particleCount: 50, angle: 120, spread: 60, startVelocity: 38, origin: { x: 0.9, y: 0.55 }, colors });
+            }, 250);
+            setTimeout(() => {
+                confetti({ particleCount: 40, spread: 100, startVelocity: 30, origin: { x: 0.5, y: 0.4 }, colors });
+            }, 550);
+        }
+    }, [allRevealed]);
 
     return (
-        <section
-            ref={ref}
-            className="min-h-[80vh] flex flex-col items-center justify-center px-7 py-[70px] relative"
-            style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 100%)' }}
-        >
-            {/* Confetti dots */}
-            {dots.map((d, i) => (
-                <div
-                    key={i}
-                    className="absolute opacity-[0.38] pointer-events-none"
-                    style={{
-                        width: d.w, height: d.h,
-                        borderRadius: d.circle ? '50%' : 2,
-                        background: d.bg,
-                        top: `${d.top}%`, left: `${d.left}%`,
-                        transform: `rotate(${d.rot}deg)`,
-                    }}
+        <>
+            <style>{fontStyle}</style>
+            <section
+                ref={ref}
+                className="min-h-[80vh] flex flex-col items-center justify-center px-7 py-[70px] relative overflow-hidden"
+                style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 55%,#fdf8f0 100%)' }}
+            >
+                {/* Soft center glow */}
+                <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-80 rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle,rgba(255,248,200,0.55) 0%,transparent 70%)' }}
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={inView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ duration: 2, ease: 'easeOut' }}
                 />
-            ))}
 
-            <div className="relative z-[1] text-center max-w-[360px] w-full">
-                <motion.p
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7 }}
-                    className="font-body text-[9px] tracking-[4px] uppercase text-gold-dark mb-2"
-                >
-                    Find your date
-                </motion.p>
+                <div className="relative z-[1] text-center max-w-[360px] w-full">
 
-                <motion.h2
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7, delay: 0.1 }}
-                    className="font-script text-[60px] text-brown leading-[1.05] mb-2.5"
-                >
-                    Save the Date
-                </motion.h2>
+                    {/* Eyebrow */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        className="save-cinzel text-xs tracking-widest uppercase mb-3"
+                        style={{ color: '#a07830' }}
+                    >
+                        A Celebration of Love
+                    </motion.p>
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="font-serif italic text-[13px] text-brown-muted mb-[38px]"
-                >
-                    Scratch below to reveal our wedding date
-                </motion.p>
+                    {/* Heading */}
+                    <motion.h2
+                        initial={{ opacity: 0, y: 22 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.75, delay: 0.12 }}
+                        className="font-greatvibes text-[58px] leading-[1.1] my-1"
+                        style={{ color: '#3d2b1f', filter: 'drop-shadow(0 2px 8px rgba(201,168,76,0.2))' }}
+                    >
+                        Save the Date
+                    </motion.h2>
 
-                <div className="flex gap-3.5 justify-center items-start">
-                    <ScratchCard label="Month" value="May" delay={0.3} />
-                    <ScratchCard label="Day" value="30" delay={0.5} />
-                    <ScratchCard label="Year" value="2026" delay={0.7} />
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={inView ? { opacity: 1 } : {}}
+                        transition={{ duration: 0.6, delay: 0.25 }}
+                        className="save-cormorant italic text-lg mb-8"
+                        style={{ color: '#8a6e58' }}
+                    >
+                        A beautiful chapter of forever is about to begin.
+                    </motion.p>
+
+                    <GoldDivider inView={inView} />
+
+                    {/* Scratch cards row */}
+                    <motion.div
+                        className="flex gap-4 justify-center items-start"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.45 }}
+                    >
+                        <ScratchCard label="Month" value="May" delay={0.5} onRevealed={handleRevealed} />
+                        <ScratchCard label="Day" value="18" delay={0.65} onRevealed={handleRevealed} />
+                        <ScratchCard label="Year" value="2026" delay={0.8} onRevealed={handleRevealed} />
+                    </motion.div>
+
+                    {/* Location line */}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={inView ? { opacity: 1 } : {}}
+                        transition={{ delay: 1.4 }}
+                        className="mt-8 font-cinzel italic text-[14px]"
+                        style={{ color: '#8a6e58' }}
+                    >
+                        Saturday · Jalgaon, Maharashtra
+                    </motion.p>
+
+                    {/* "All revealed" celebration banner */}
+                    <AnimatePresence>
+                        {allRevealed && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 18, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                className="mt-6 px-5 py-3 rounded-[10px] inline-block"
+                                style={{
+                                    background: 'linear-gradient(135deg,rgba(201,168,76,0.12),rgba(232,201,106,0.2))',
+                                    border: '1px solid rgba(201,168,76,0.4)',
+                                }}
+                            >
+                                <p className="save-cinzel text-[10px] tracking-[3px] uppercase" style={{ color: '#a07830' }}>
+                                    ✦ Mark Your Calendar ✦
+                                </p>
+                                <p className="save-playfair italic text-[18px] mt-0.5" style={{ color: '#3d2b1f' }}>
+                                    May 18, 2026
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ delay: 1.3 }}
-                    className="mt-7 font-serif italic text-[13px] text-brown-muted"
-                >
-                    Saturday · Jalgaon, Maharashtra
-                </motion.p>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }

@@ -1,142 +1,158 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
+const fontStyle = `
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+  .wl-cinzel     { font-family: 'Cinzel', serif; letter-spacing: 0.06em; }
+  .wl-cormorant  { font-family: 'Cormorant Garamond', serif; }
+`;
+
+/* ── Floating gold petals ── */
+function GoldPetal({ index }) {
+    const left = 4 + (index * 9.3) % 92;
+    const dur = 6 + (index * 0.7) % 5;
+    const delay = (index * 0.6) % 7;
+    return (
+        <motion.div
+            className="absolute top-0 pointer-events-none z-0"
+            style={{ left: `${left}%` }}
+            animate={{ y: ['0vh', '105vh'], opacity: [0, 0.7, 0.7, 0], rotate: [0, 180, 360] }}
+            transition={{ duration: dur, repeat: Infinity, delay, ease: 'linear' }}
+        >
+            <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+                <path d="M7 1C2 5 1 10 3.5 14C5 16.5 9.5 17 11 14C13.5 10.5 13 4 7 1Z" fill="#c9a84c" opacity="0.55" />
+            </svg>
+        </motion.div>
+    );
+}
+
+/* ── Animated gold divider ── */
+function GoldDivider({ delay = 0 }) {
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.5 });
+    return (
+        <motion.div
+            ref={ref}
+            className="flex items-center gap-3 w-full max-w-[220px] mx-auto"
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={inView ? { opacity: 1, scaleX: 1 } : {}}
+            transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
+        >
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right,transparent,#c9a84c)' }} />
+            <span style={{ color: '#c9a84c', fontSize: 10 }}>✦</span>
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left,transparent,#c9a84c)' }} />
+        </motion.div>
+    );
+}
+
 export default function WelcomeSection() {
-    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.18 });
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
     return (
-        <section
-            ref={ref}
-            className="min-h-[92vh] flex flex-col items-center justify-center pt-20 pb-[60px] px-7 relative overflow-hidden text-center"
-            style={{ background: 'linear-gradient(180deg,#f7f3ea 0%,#2e2010 100%)' }}
-        >
-            {/* Gold dust */}
-            {Array.from({ length: 22 }).map((_, i) => (
-                <motion.div
-                    key={i}
-                    animate={{ y: [0, -18, 0], opacity: [0.15, 0.7, 0.15] }}
-                    transition={{ duration: 3 + i * 0.35, repeat: Infinity, delay: i * 0.28 }}
-                    className="absolute w-[3px] h-[3px] rounded-full bg-gold pointer-events-none"
-                    style={{
-                        top: `${4 + (i * 4.4) % 92}%`,
-                        left: `${3 + (i * 4.3) % 94}%`,
-                    }}
-                />
-            ))}
-
-            <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={inView ? { scale: 1, opacity: 1 } : {}}
-                transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-                className="text-[58px] mb-[22px]"
+        <>
+            <style>{fontStyle}</style>
+            <section
+                ref={ref}
+                className="relative overflow-hidden flex flex-col items-center justify-center px-7 pt-[88px] pb-[72px] text-center"
+                style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 40%,#fdf8f0 100%)' }}
             >
-                🌸
-            </motion.div>
+                {/* Falling gold petals */}
+                {Array.from({ length: 16 }).map((_, i) => <GoldPetal key={i} index={i} />)}
 
-            <div className="max-w-[340px] relative z-[1]">
-                <motion.p
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="font-body text-[9px] tracking-[4px] uppercase text-gold-dark mb-2.5"
-                >
-                    With heartfelt love
-                </motion.p>
-
-                <motion.h2
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7, delay: 0.3 }}
-                    className="font-script text-[56px] text-brown leading-[1.05] mb-[18px]"
-                >
-                    Welcome
-                </motion.h2>
-
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.7, delay: 0.5 }}
-                    className="font-serif italic text-[16px] text-brown-mid leading-[1.8] mb-7"
-                >
-                    The Kothari Family cordially invites you to join us in celebrating this beautiful union of two souls, two families, and one love.
-                </motion.p>
-
-                {/* Rule */}
+                {/* Soft radial glow */}
                 <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={inView ? { scaleX: 1 } : {}}
-                    transition={{ duration: 0.9, delay: 0.6 }}
-                    className="h-px my-[22px]"
-                    style={{ background: 'linear-gradient(to right,transparent,#c9a84c,transparent)' }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle,rgba(255,248,200,0.6) 0%,transparent 70%)' }}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={inView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ duration: 2.2, ease: 'easeOut' }}
                 />
 
-                {/* Family name */}
-                <motion.div
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.7, delay: 0.7 }}
-                >
-                    <p className="font-display text-[23px] font-bold italic text-brown tracking-[1px] mb-1">
-                        Kothari Family
-                    </p>
-                    <p className="font-body text-[10px] tracking-[2px] uppercase text-brown-muted">invites you</p>
-                </motion.div>
+                <div className="relative z-10 max-w-[360px] w-full">
 
-                {/* Names box */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    animate={inView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.9, delay: 0.9 }}
-                    className="my-7 py-7 px-6 rounded-2xl"
-                    style={{
-                        background: 'linear-gradient(135deg,rgba(201,168,76,0.09),rgba(201,168,76,0.03))',
-                        border: '1px solid rgba(201,168,76,0.22)',
-                    }}
-                >
-                    <p className="font-script text-[74px] text-brown leading-none mb-1">Tanmay</p>
-                    <p className="font-script text-[38px] text-forest leading-none my-1">&amp;</p>
-                    <p className="font-script text-[74px] text-brown leading-none">Tanya</p>
-                </motion.div>
+                    {/* Eyebrow */}
+                    <motion.p
+                        className="wl-cinzel text-xs tracking-[4px] uppercase mb-4"
+                        style={{ color: '#a07830' }}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.65 }}
+                    >
+                        With Heartfelt Love
+                    </motion.p>
 
-                {/* Date stamp */}
-                <motion.div
-                    initial={{ opacity: 0, rotate: -3 }}
-                    animate={inView ? { opacity: 1, rotate: -3 } : {}}
-                    transition={{ duration: 0.7, delay: 1.1 }}
-                    className="w-28 h-28 rounded-full flex flex-col items-center justify-center mx-auto"
-                    style={{
-                        background: 'rgba(201,168,76,0.1)',
-                        border: '2px solid rgba(201,168,76,0.38)',
-                    }}
-                >
-                    <span className="font-body text-[22px] font-bold text-brown leading-none">30</span>
-                    <span className="font-script text-[22px] text-gold leading-[1.1]">May</span>
-                    <span className="font-body text-[13px] text-brown-mid font-semibold leading-[1.3]">2026</span>
-                    <span className="font-body text-[7px] tracking-[1px] text-brown-muted uppercase">Jalgaon</span>
-                </motion.div>
+                    {/* Main heading */}
 
-                {/* Closing */}
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.7, delay: 1.3 }}
-                    className="mt-9 font-serif italic text-[13px] text-brown-muted leading-[1.75]"
-                >
-                    Your presence, blessings and good wishes<br />will make this occasion truly special.
-                </motion.p>
 
-                {/* Footer */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.7, delay: 1.5 }}
-                    className="mt-9 pt-[18px]"
-                    style={{ borderTop: '1px solid rgba(201,168,76,0.2)' }}
-                >
-                    <p className="text-gold text-[22px] mb-2">✦</p>
-                    <p className="font-body text-[9px] tracking-[3px] text-gold-dark uppercase">With love &amp; joy</p>
-                </motion.div>
-            </div>
-        </section>
+                    <div className="my-5">
+                        <GoldDivider delay={0.25} />
+                    </div>
+
+                    {/* Invite line */}
+                    <motion.p
+                        className="wl-cormorant italic text-2xl leading-8 mb-8"
+                        style={{ color: '#7a5c42' }}
+                        initial={{ opacity: 0 }}
+                        animate={inView ? { opacity: 1 } : {}}
+                        transition={{ duration: 0.7, delay: 0.35 }}
+                    >
+                        The Kothari Family invites you to celebrate this union of love
+                    </motion.p>
+
+
+                    {/* ── Date stamp ── */}
+                    {/* <motion.div
+                        initial={{ opacity: 0, scale: 0.8, rotate: -4 }}
+                        animate={inView ? { opacity: 1, scale: 1, rotate: -3 } : {}}
+                        transition={{ duration: 0.75, delay: 0.95, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-28 h-28 rounded-full flex flex-col items-center justify-center mx-auto mb-9"
+                        style={{
+                            background: 'linear-gradient(145deg,rgba(255,253,245,0.9),rgba(250,243,224,0.8))',
+                            border: '2px solid rgba(201,168,76,0.45)',
+                            boxShadow: '0 8px 24px rgba(201,168,76,0.18)',
+                        }}
+                    >
+                        <span className="wl-cinzel font-bold leading-none" style={{ fontSize: 24, color: '#3d2b1f' }}>18</span>
+                        <span className="font-greatvibes leading-[1.1]" style={{ fontSize: 22, color: '#c9a84c' }}>May</span>
+                        <span className="wl-cinzel font-semibold leading-[1.3]" style={{ fontSize: 12, color: '#5c3d1e' }}>2026</span>
+                        <span className="wl-cinzel text-[7px] tracking-[1px] uppercase" style={{ color: '#a07830', marginTop: 1 }}>Jalgaon</span>
+                    </motion.div> */}
+
+
+                    {/* Main heading */}
+                    <motion.h2
+                        className="font-greatvibes leading-[1.05] mb-2"
+                        style={{ fontSize: 68, color: '#3d2b1f', filter: 'drop-shadow(0 3px 12px rgba(201,168,76,0.25))' }}
+                        initial={{ opacity: 0, y: 22 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.8, delay: 0.12 }}
+                    >
+                        Best Regards
+                    </motion.h2>
+                    <motion.p
+                        className="wl-serif text-sm tracking-[2px]  mb-4"
+                        style={{ color: '#a07830' }}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.65 }}
+                    >
+                        <div>Sharda & Kantilal Kothari</div>
+                        <div>Anamika & Hemant Kothari</div>
+                        <div>Payal & Ujwal Kothari</div>
+                    </motion.p>
+
+                    <motion.p
+                        className="wl-cinzel text-sm tracking-[2px]  mb-4"
+                        style={{ color: '#390F0F' }}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.65 }}
+                    >
+                        Your presence will make it truly special.
+                    </motion.p>
+
+
+                </div>
+            </section>
+        </>
     );
 }
