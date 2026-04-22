@@ -139,6 +139,25 @@ export default function WelcomeSection() {
                         <div>Anamika & Hemant Kothari</div>
                         <div>Payal & Ujwal Kothari</div>
                     </motion.p>
+                    <motion.h2
+                        className="font-greatvibes leading-[1.05] mb-2"
+                        style={{ fontSize: 68, color: '#3d2b1f', filter: 'drop-shadow(0 3px 12px rgba(201,168,76,0.25))' }}
+                        initial={{ opacity: 0, y: 22 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.8, delay: 0.12 }}
+                    >
+                        Chirpy Family
+                    </motion.h2>
+                    <motion.p
+                        className="wl-serif text-sm tracking-[2px]  mb-4"
+                        style={{ color: '#a07830' }}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.65 }}
+                    >
+                        <div>Mishree, Pratham & Parth Kothari</div>
+
+                    </motion.p>
 
                     <motion.p
                         className="wl-cinzel text-sm tracking-[2px]  mb-4"

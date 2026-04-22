@@ -93,7 +93,7 @@ export default function HeroSection() {
                     {/* Quote */}
                     <motion.blockquote
                         {...fadeUp(0.5)}
-                        className="font-serif italic text-[22px] text-brown-light leading-9 mb-5 px-2"
+                        className="font-serif italic text-[24px] text-brown-light leading-9 mb-5 px-2"
                     >
                         "We cordially invite you to join us
                         for Pre-Wedding Reception of "
@@ -117,10 +117,10 @@ export default function HeroSection() {
 
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5"
+                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand S/O
-                        Sau. Sharda &amp; Shri. Kantilalji Kothari
+                        Sau Sharda &amp; Shri Kantilalji Kothari
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.15)}
@@ -153,10 +153,10 @@ export default function HeroSection() {
                     </motion.h1>
                     <motion.p
                         {...fadeUp(1.15)}
-                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5"
+                        className="font-body text-xs tracking-widest text-amber-950 uppercase mb-1.5 whitespace-nowrap"
                     >
                         Grand D/O
-                        Late Sau. Jatan Devi &amp; Shri. Jagat Singh Kothari
+                        Late. Jatan Devi &amp; Shri Jagat SinghJi Kothari
                     </motion.p>
                     <motion.p
                         {...fadeUp(1.15)}
@@ -168,7 +168,7 @@ export default function HeroSection() {
                         {...fadeUp(1.5)}
                         className="font-body text-xs tracking-widest text-amber-950 uppercase mb-11"
                     >
-                        Daughter of Priyanka &amp; Sandeep Kothari
+                        Daughter of Priyanka &amp; Sandeepji Kothari
                     </motion.p>
 
                     {/* Scroll hint */}

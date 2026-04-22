@@ -376,7 +376,7 @@ export default function SaveTheDateSection() {
                         className="mt-8 font-cinzel italic text-[14px]"
                         style={{ color: '#8a6e58' }}
                     >
-                        Saturday · Jalgaon, Maharashtra
+                        Monday · Jalgaon, Maharashtra
                     </motion.p>
 
                     {/* "All revealed" celebration banner */}
