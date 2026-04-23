@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { RosePetal } from './VenueSection';
 
 // ─── UPDATE THESE PATHS to your public folder files ──────────────────────────
 const RECEPTION_VIDEO = '/prewedding.mp4';        // ← your video
@@ -15,7 +16,7 @@ const fontStyle = `
 
 function GoldDivider() {
     return (
-        <div className="flex items-center gap-3 w-full max-w-[200px] mx-auto my-5">
+        <div className="flex items-center gap-3 w-full max-w-50 mx-auto my-5">
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right,transparent,#c9a84c)' }} />
             <span style={{ color: '#c9a84c', fontSize: 10 }}>✦</span>
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left,transparent,#c9a84c)' }} />
@@ -78,7 +79,9 @@ function CeremonyVideo({ src, poster, label }) {
                     }}
                 />
             )}
-
+            {Array.from({ length: 10 }).map((_, i) => (
+                <RosePetal key={i} left={6 + (i * 9) % 88} />
+            ))}
             {/* Bottom gradient */}
             <div
                 className="absolute inset-0 pointer-events-none"
@@ -87,7 +90,7 @@ function CeremonyVideo({ src, poster, label }) {
 
             {/* Label chip */}
             <div
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full whitespace-nowrap"
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 pb-1  rounded-full whitespace-nowrap"
                 style={{
                     background: 'rgba(0,0,0,0.42)',
                     backdropFilter: 'blur(8px)',
@@ -121,7 +124,7 @@ export default function SacredCeremoniesSection() {
             <style>{fontStyle}</style>
             <section
                 ref={ref}
-                className="min-h-screen px-6 pt-[80px] pb-[70px] relative overflow-hidden"
+                className="min-h-screen px-6 pt-1 pb-16 relative overflow-hidden"
                 style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 55%,#fdf8f0 100%)' }}
             >
                 {/* Ambient sparkles */}
@@ -142,14 +145,14 @@ export default function SacredCeremoniesSection() {
                     </motion.span>
                 ))}
 
-                <div className="max-w-[400px] mx-auto relative z-10">
+                <div className="max-w-100 mx-auto relative z-10">
 
                     {/* Section header */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.75 }}
-                        className="text-center mb-10"
+                        className="text-center mb-8"
                     >
                         <p className="sc-cinzel text-[10px] tracking-[4px] uppercase mb-3" style={{ color: '#a07830' }}>
                             Moments to Cherish

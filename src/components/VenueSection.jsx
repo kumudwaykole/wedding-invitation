@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
-function RosePetal({ left }) {
+export function RosePetal({ left }) {
     const dur = 4.5 + Math.random() * 4;
     const delay = Math.random() * 7;
     return (
@@ -30,7 +30,7 @@ export default function VenueSection() {
     return (
         <section
             ref={ref}
-            className="min-h-[85vh] pt-[80px] pb-[60px] px-6 relative overflow-hidden"
+            className="min-h-[70vh] pt-5 pb-5 px-6 relative overflow-hidden"
             style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#fff5f7 55%,#fdf8f0 100%)' }}
         >
             {/* Petals */}
@@ -38,13 +38,13 @@ export default function VenueSection() {
                 <RosePetal key={i} left={4 + (i * 6.5) % 92} />
             ))}
 
-            <div className="max-w-[420px] mx-auto relative z-[3]">
+            <div className="max-w-105 mx-auto relative z-3">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 18 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.7 }}
-                    className="text-center mb-[38px]"
+                    className="text-center mb-9"
                 >
                     <p className="font-cinzel text-xs tracking-widest uppercase text-gold-dark mb-5">Join Us At</p>
                     <h2 className="font-greatvibes text-[68px] text-brown leading-[1.1] mb-2.5">The Venue</h2>

@@ -32,7 +32,7 @@ function GoldDivider({ delay = 0 }) {
     return (
         <motion.div
             ref={ref}
-            className="flex items-center gap-3 w-full max-w-[220px] mx-auto"
+            className="flex items-center gap-3 w-full max-w-55 mx-auto"
             initial={{ opacity: 0, scaleX: 0 }}
             animate={inView ? { opacity: 1, scaleX: 1 } : {}}
             transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -52,7 +52,7 @@ export default function WelcomeSection() {
             <style>{fontStyle}</style>
             <section
                 ref={ref}
-                className="relative overflow-hidden flex flex-col items-center justify-center px-7 pt-[88px] pb-[72px] text-center"
+                className="relative overflow-hidden flex flex-col items-center justify-center px-7 pt-5 pb-14 text-center"
                 style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 40%,#fdf8f0 100%)' }}
             >
                 {/* Falling gold petals */}
@@ -71,7 +71,7 @@ export default function WelcomeSection() {
 
                     {/* Eyebrow */}
                     <motion.p
-                        className="wl-cinzel text-xs tracking-[4px] uppercase mb-4"
+                        className="wl-cinzel text-xs tracking-[4px] uppercase mb-3"
                         style={{ color: '#a07830' }}
                         initial={{ opacity: 0, y: 14 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -87,7 +87,7 @@ export default function WelcomeSection() {
                         <GoldDivider delay={0.25} />
                     </div>
 
-                    {/* Invite line */}
+                    {/* Invite line
                     <motion.p
                         className="wl-cormorant italic text-2xl leading-8 mb-8"
                         style={{ color: '#7a5c42' }}
@@ -96,7 +96,7 @@ export default function WelcomeSection() {
                         transition={{ duration: 0.7, delay: 0.35 }}
                     >
                         The Kothari Family invites you to celebrate this union of love
-                    </motion.p>
+                    </motion.p> */}
 
 
                     {/* ── Date stamp ── */}
@@ -129,7 +129,7 @@ export default function WelcomeSection() {
                         Best Regards
                     </motion.h2>
                     <motion.p
-                        className="wl-serif text-sm tracking-[2px]  mb-4"
+                        className="wl-serif text-lg tracking-[2px]  mb-4"
                         style={{ color: '#a07830' }}
                         initial={{ opacity: 0, y: 14 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -149,7 +149,7 @@ export default function WelcomeSection() {
                         Chirpy Family
                     </motion.h2>
                     <motion.p
-                        className="wl-serif text-sm tracking-[2px]  mb-4"
+                        className="wl-serif text-lg tracking-[2px]  mb-4"
                         style={{ color: '#a07830' }}
                         initial={{ opacity: 0, y: 14 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}

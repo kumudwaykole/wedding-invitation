@@ -21,7 +21,7 @@ export default function HeroSection() {
         <>
             <style>{fontStyle}</style>
             <section
-                className="min-h-screen flex flex-col items-center justify-center px-7 py-7 relative overflow-hidden"
+                className="min-h-screen flex flex-col items-center justify-center px-2 py-7 relative overflow-hidden"
                 style={{
                     background: `
                       radial-gradient(circle at top, rgba(255,248,220,0.7) 0%, transparent 32%),
@@ -176,18 +176,61 @@ export default function HeroSection() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 2.4 }}
-                        className="flex flex-col items-center gap-1.25"
+                        className="flex flex-col items-center gap-3 pt-5"
                     >
-                        <span className="font-body text-xs font-bold italic tracking-[3px] text-gold-dark uppercase pt-5">
-                            Scroll down
-                        </span>
-                        <motion.span
-                            animate={{ y: [0, 8, 0] }}
-                            transition={{ duration: 1.6, repeat: Infinity }}
-                            className="text-gold text-xl"
+                        {/* Pill badge with golden shine */}
+                        <div
+                            className="relative overflow-hidden px-4 py-1.5 rounded-full"
+                            style={{
+                                background: 'linear-gradient(135deg, #b8922a 0%, #e8c96a 40%, #c9a84c 60%, #8a6420 100%)',
+                                border: '1px solid rgba(255,220,100,0.6)',
+                                boxShadow: '0 2px 12px rgba(201,168,76,0.45), inset 0 1px 0 rgba(255,255,200,0.3)',
+                            }}
                         >
-                            ↓
-                        </motion.span>
+                            {/* Shine sweep */}
+                            <motion.div
+                                animate={{ x: ['-120%', '220%'] }}
+                                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' }}
+                                className="absolute inset-0 pointer-events-none"
+                                style={{
+                                    background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,220,0.55) 50%, transparent 70%)',
+                                    width: '60%',
+                                }}
+                            />
+                            <span
+                                className="relative z-10 font-body text-[10px] font-bold italic tracking-[3px] uppercase"
+                                style={{ color: '#3d2200', textShadow: '0 1px 2px rgba(255,220,100,0.4)' }}
+                            >
+                                Scroll down
+                            </span>
+                        </div>
+
+                        {/* Circular scroll mouse indicator */}
+                        <div
+                            className="relative flex items-start justify-center"
+                            style={{
+                                width: 28,
+                                height: 44,
+                                borderRadius: 14,
+                                border: '1.5px solid #c9a84c',
+                                background: 'linear-gradient(180deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.04) 100%)',
+                                boxShadow: '0 0 10px rgba(201,168,76,0.25), inset 0 1px 0 rgba(255,220,100,0.2)',
+                            }}
+                        >
+                            {/* Bouncing dot inside the mouse oval */}
+                            <motion.div
+                                animate={{ y: [4, 20, 4], opacity: [1, 0.2, 1] }}
+                                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                                style={{
+                                    width: 5,
+                                    height: 5,
+                                    marginTop: 5,
+                                    borderRadius: '50%',
+                                    background: 'radial-gradient(circle, #ffe680 0%, #c9a84c 100%)',
+                                    boxShadow: '0 0 6px rgba(201,168,76,0.8)',
+                                }}
+                            />
+                        </div>
                     </motion.div>
                 </div>
             </section>

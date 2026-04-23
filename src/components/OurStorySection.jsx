@@ -181,7 +181,7 @@ export default function OurStorySection() {
             <style>{fontStyle}</style>
             <section
                 ref={ref}
-                className="min-h-screen px-7 pt-[80px] pb-[80px] relative overflow-hidden"
+                className="min-h-screen px-7 pt-10 pb-12 relative overflow-hidden"
                 style={{ background: 'linear-gradient(180deg,#f7f3ea 0%,#fdf8f0 100%)' }}
             >
                 {/* Ambient floating sparkles */}

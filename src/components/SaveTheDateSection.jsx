@@ -5,17 +5,10 @@ import confetti from 'canvas-confetti';
 
 const fontStyle = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap');
-  .save-cinzel {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-  }
-  .save-cormorant {
-    font-family: 'Cormorant Garamond', serif;
-  }
+  .save-cinzel { font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: 0.06em; }
+  .save-cormorant { font-family: 'Cormorant Garamond', serif; }
 `;
 
-/* ── Sparkle burst shown when a card is revealed ── */
 function SparkleBurst() {
     return (
         <motion.div
@@ -46,7 +39,6 @@ function SparkleBurst() {
     );
 }
 
-/* ── Shimmer overlay when hovering unrevealed card ── */
 function ShimmerLayer({ active }) {
     return (
         <AnimatePresence>
@@ -72,7 +64,6 @@ function ShimmerLayer({ active }) {
     );
 }
 
-/* ── Single scratch card ── */
 function ScratchCard({ label, value, delay, onRevealed }) {
     const canvasRef = useRef(null);
     const [revealed, setRevealed] = useState(false);
@@ -81,42 +72,54 @@ function ScratchCard({ label, value, delay, onRevealed }) {
     const drawing = useRef(false);
     const [cardRef, inView] = useInView({ triggerOnce: true });
 
-    // Card dimensions — increase height here
     const CARD_W = 108;
     const CARD_H = 120;
+    const DPR = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
 
     useEffect(() => {
         const c = canvasRef.current;
         if (!c) return;
-        const ctx = c.getContext('2d');
 
-        const g = ctx.createLinearGradient(0, 0, c.width, c.height);
+        // Set physical size for crisp rendering
+        c.width = CARD_W * DPR;
+        c.height = CARD_H * DPR;
+        c.style.width = `${CARD_W}px`;
+        c.style.height = `${CARD_H}px`;
+
+        const ctx = c.getContext('2d');
+        ctx.scale(DPR, DPR);
+
+        const g = ctx.createLinearGradient(0, 0, CARD_W, CARD_H);
         g.addColorStop(0, '#b8922a');
         g.addColorStop(0.3, '#e8c96a');
         g.addColorStop(0.6, '#c9a84c');
         g.addColorStop(1, '#8a6420');
         ctx.fillStyle = g;
-        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillRect(0, 0, CARD_W, CARD_H);
 
         for (let i = 0; i < 400; i++) {
             ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 0},${Math.random() > 0.5 ? 200 : 100},0,0.03)`;
-            ctx.fillRect(Math.random() * c.width, Math.random() * c.height, 2, 2);
+            ctx.fillRect(Math.random() * CARD_W, Math.random() * CARD_H, 2, 2);
         }
 
-        ctx.fillStyle = 'rgba(60,35,5,0.7)';
-        ctx.font = 'bold 9px cormorant, serif';
+        // Crisp text — no blur
+        ctx.fillStyle = 'rgba(60,35,5,0.75)';
+        ctx.font = 'bold 11px "Cormorant Garamond", serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.letterSpacing = '2px';
-        ctx.fillText('✦ SCRATCH ✦', c.width / 2, c.height / 2 - 7);
-        ctx.fillText('HERE', c.width / 2, c.height / 2 + 11);
+        ctx.fillText('✦ SCRATCH ✦', CARD_W / 2, CARD_H / 2 - 8);
+        ctx.fillText('HERE', CARD_W / 2, CARD_H / 2 + 10);
     }, []);
 
     const getXY = (e, c) => {
         const r = c.getBoundingClientRect();
-        const sx = c.width / r.width, sy = c.height / r.height;
+        // Account for DPR when mapping to canvas coords
         const src = e.touches ? e.touches[0] : e;
-        return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+        return {
+            x: (src.clientX - r.left),
+            y: (src.clientY - r.top),
+        };
     };
 
     const erase = (e) => {
@@ -126,7 +129,8 @@ function ScratchCard({ label, value, delay, onRevealed }) {
         const { x, y } = getXY(e, c);
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.arc(x, y, 28, 0, Math.PI * 2);
+        // Scale brush radius by DPR
+        ctx.arc(x * DPR, y * DPR, 28 * DPR, 0, Math.PI * 2);
         ctx.fill();
 
         const px = ctx.getImageData(0, 0, c.width, c.height).data;
@@ -153,8 +157,6 @@ function ScratchCard({ label, value, delay, onRevealed }) {
             <motion.span
                 className="save-cinzel text-[10px] tracking-[2.5px] uppercase"
                 style={{ color: '#a07830' }}
-                animate={revealed ? { color: '#4a7c59' } : {}}
-                transition={{ duration: 0.5 }}
             >
                 {label}
             </motion.span>
@@ -207,12 +209,10 @@ function ScratchCard({ label, value, delay, onRevealed }) {
 
                 <ShimmerLayer active={hovered && !revealed} />
 
-                {/* Scratch canvas */}
+                {/* Scratch canvas — CSS size set in JS via useEffect */}
                 <canvas
                     ref={canvasRef}
-                    width={CARD_W}
-                    height={CARD_H}
-                    className="absolute inset-0 w-full h-full touch-none"
+                    className="absolute inset-0 touch-none"
                     style={{
                         opacity: revealed ? 0 : 1,
                         transition: revealed ? 'opacity 0.6s ease' : 'none',
@@ -240,20 +240,10 @@ function ScratchCard({ label, value, delay, onRevealed }) {
                     </motion.div>
                 )}
             </motion.div>
-
-            {/* Status text */}
-            <motion.span
-                className="save-cinzel text-[9px] tracking-[1.5px] uppercase"
-                animate={{ color: revealed ? '#4a7c59' : '#a07830' }}
-                transition={{ duration: 0.4 }}
-            >
-                {revealed ? 'Revealed' : 'Scratch'}
-            </motion.span>
         </motion.div>
     );
 }
 
-/* ── Animated gold divider ── */
 function GoldDivider({ inView }) {
     return (
         <motion.div
@@ -269,7 +259,70 @@ function GoldDivider({ inView }) {
     );
 }
 
-/* ── Main section ── */
+/* ── Google Calendar Add Button ── */
+function AddToCalendarButton() {
+    // Google Calendar link for May 18, 2026
+    const gcalUrl =
+        'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+        '&text=Wedding+Celebration' +
+        '&dates=20260518/20260519' +
+        '&details=You+are+cordially+invited+to+our+wedding+celebration.' +
+        '&location=Jalgaon%2C+Maharashtra';
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-8 flex flex-col items-center gap-3"
+        >
+
+
+            {/* Heading */}
+            <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="save-cormorant italic text-[22px] leading-tight"
+                style={{ color: '#3d2b1f' }}
+            >
+                Mark this special day
+            </motion.p>
+
+            {/* Button */}
+            <motion.a
+                href={gcalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.45, type: 'spring', stiffness: 300, damping: 20 }}
+                whileHover={{ scale: 1.04, boxShadow: '0 6px 28px rgba(201,168,76,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2.5 px-6 py-3 rounded-full no-underline"
+                style={{
+                    background: 'linear-gradient(135deg, #fdf3dc, #fae8b4)',
+                    border: '1px solid rgba(201,168,76,0.55)',
+                    boxShadow: '0 3px 16px rgba(201,168,76,0.25)',
+                    textDecoration: 'none',
+                }}
+            >
+                <span
+                    className="save-cinzel text-xs uppercase"
+                    style={{ color: '#7a5515' }}
+                >
+                    <p className="save-cinzel text-xs tracking-[3px] uppercase" style={{ color: '#a07830' }}>
+                        On Your Calendar
+                    </p>
+                    <p className="save-greatvibes  text-lg mt-0.5" style={{ color: '#3d2b1f' }}>
+                        May 18, 2026
+                    </p>
+                </span>
+            </motion.a>
+        </motion.div>
+    );
+}
+
 export default function SaveTheDateSection() {
     const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
     const [revealedCount, setRevealedCount] = useState(0);
@@ -278,20 +331,11 @@ export default function SaveTheDateSection() {
 
     const handleRevealed = () => setRevealedCount(n => n + 1);
 
-    // Fire confetti only when all 3 are revealed
     useEffect(() => {
         if (allRevealed && !confettiFired.current) {
             confettiFired.current = true;
             const colors = ['#c9a84c', '#e8c96a', '#fff4cf', '#f5d6a0', '#a07830', '#4a7c59'];
-            confetti({
-                particleCount: 100,
-                spread: 80,
-                startVelocity: 45,
-                origin: { x: 0.5, y: 0.5 },
-                colors,
-                gravity: 1.1,
-                scalar: 1.0,
-            });
+            confetti({ particleCount: 100, spread: 80, startVelocity: 45, origin: { x: 0.5, y: 0.5 }, colors, gravity: 1.1, scalar: 1.0 });
             setTimeout(() => {
                 confetti({ particleCount: 50, angle: 60, spread: 60, startVelocity: 38, origin: { x: 0.1, y: 0.55 }, colors });
                 confetti({ particleCount: 50, angle: 120, spread: 60, startVelocity: 38, origin: { x: 0.9, y: 0.55 }, colors });
@@ -307,10 +351,9 @@ export default function SaveTheDateSection() {
             <style>{fontStyle}</style>
             <section
                 ref={ref}
-                className="min-h-[80vh] flex flex-col items-center justify-center px-7 py-[70px] relative overflow-hidden"
+                className="min-h-[80vh] flex flex-col items-center justify-center px-7 py-10 relative overflow-hidden"
                 style={{ background: 'linear-gradient(180deg,#fdf8f0 0%,#faf3e0 55%,#fdf8f0 100%)' }}
             >
-                {/* Soft center glow */}
                 <motion.div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-80 rounded-full pointer-events-none"
                     style={{ background: 'radial-gradient(circle,rgba(255,248,200,0.55) 0%,transparent 70%)' }}
@@ -320,8 +363,6 @@ export default function SaveTheDateSection() {
                 />
 
                 <div className="relative z-[1] text-center max-w-[360px] w-full">
-
-                    {/* Eyebrow */}
                     <motion.p
                         initial={{ opacity: 0, y: 14 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -332,7 +373,6 @@ export default function SaveTheDateSection() {
                         A Celebration of Love
                     </motion.p>
 
-                    {/* Heading */}
                     <motion.h2
                         initial={{ opacity: 0, y: 22 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -343,12 +383,11 @@ export default function SaveTheDateSection() {
                         Save the Date
                     </motion.h2>
 
-                    {/* Subtitle */}
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={inView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6, delay: 0.25 }}
-                        className="save-cormorant italic text-lg mb-8"
+                        className="save-cormorant italic text-lg mb-5"
                         style={{ color: '#8a6e58' }}
                     >
                         A beautiful chapter of forever is about to begin.
@@ -356,7 +395,6 @@ export default function SaveTheDateSection() {
 
                     <GoldDivider inView={inView} />
 
-                    {/* Scratch cards row */}
                     <motion.div
                         className="flex gap-4 justify-center items-start"
                         initial={{ opacity: 0, y: 20 }}
@@ -364,43 +402,15 @@ export default function SaveTheDateSection() {
                         transition={{ duration: 0.6, delay: 0.45 }}
                     >
                         <ScratchCard label="Month" value="May" delay={0.5} onRevealed={handleRevealed} />
-                        <ScratchCard label="Day" value="18" delay={0.65} onRevealed={handleRevealed} />
+                        <ScratchCard label="Date" value="18" delay={0.65} onRevealed={handleRevealed} />
                         <ScratchCard label="Year" value="2026" delay={0.8} onRevealed={handleRevealed} />
                     </motion.div>
 
-                    {/* Location line */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={inView ? { opacity: 1 } : {}}
-                        transition={{ delay: 1.4 }}
-                        className="mt-8 font-cinzel italic text-[14px]"
-                        style={{ color: '#8a6e58' }}
-                    >
-                        Monday · Jalgaon, Maharashtra
-                    </motion.p>
 
-                    {/* "All revealed" celebration banner */}
+
+                    {/* Google Calendar CTA */}
                     <AnimatePresence>
-                        {allRevealed && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 18, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                                className="mt-6 px-5 py-3 rounded-[10px] inline-block"
-                                style={{
-                                    background: 'linear-gradient(135deg,rgba(201,168,76,0.12),rgba(232,201,106,0.2))',
-                                    border: '1px solid rgba(201,168,76,0.4)',
-                                }}
-                            >
-                                <p className="save-cinzel text-[10px] tracking-[3px] uppercase" style={{ color: '#a07830' }}>
-                                    ✦ Mark Your Calendar ✦
-                                </p>
-                                <p className="save-playfair italic text-[18px] mt-0.5" style={{ color: '#3d2b1f' }}>
-                                    May 18, 2026
-                                </p>
-                            </motion.div>
-                        )}
+                        {allRevealed && <AddToCalendarButton />}
                     </AnimatePresence>
                 </div>
             </section>
