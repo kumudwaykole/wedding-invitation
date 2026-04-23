@@ -264,9 +264,9 @@ function AddToCalendarButton() {
     // Google Calendar link for May 18, 2026
     const gcalUrl =
         'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-        '&text=Wedding+Celebration' +
+        '&text=PreWedding+Celebration❤️' +
         '&dates=20260518/20260519' +
-        '&details=You+are+cordially+invited+to+our+wedding+celebration.' +
+        '&details=You+are+cordially+invited+to+our+prewedding+celebration.' +
         '&location=Jalgaon%2C+Maharashtra';
 
     return (
